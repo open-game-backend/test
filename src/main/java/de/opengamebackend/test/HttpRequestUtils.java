@@ -38,7 +38,7 @@ public class HttpRequestUtils {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (playerId != null) {
-            httpHeaders.put("PlayerId", Collections.singletonList(playerId));
+            httpHeaders.put("Player-Id", Collections.singletonList(playerId));
         }
 
         String responseJson = mvc.perform(post(url)
