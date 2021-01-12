@@ -2,8 +2,11 @@ package de.opengamebackend.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,11 +28,22 @@ public class HttpRequestUtils {
     }
 
     public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass) throws Exception {
+        return assertPostOk(mvc, url, request, responseClass, null);
+    }
+
+    public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass, String playerId) throws Exception {
         ObjectMapper objectMapper = createObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        if (playerId != null) {
+            httpHeaders.put("PlayerId", Collections.singletonList(playerId));
+        }
+
         String responseJson = mvc.perform(post(url)
                 .content(requestJson)
+                .headers(httpHeaders)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
