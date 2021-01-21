@@ -15,7 +15,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class HttpRequestUtils {
     public <T> T assertGetOk(MockMvc mvc, String url, Class<T> responseClass) throws Exception {
+       return assertGetOk(mvc, url, responseClass, null);
+    }
+
+    public <T> T assertGetOk(MockMvc mvc, String url, Class<T> responseClass, String playerId) throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        if (playerId != null) {
+            httpHeaders.put("Player-Id", Collections.singletonList(playerId));
+        }
+
         String responseJson = mvc.perform(get(url)
+                .headers(httpHeaders)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
