@@ -9,8 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class HttpRequestUtils {
@@ -64,6 +63,20 @@ public class HttpRequestUtils {
         assertThat(response).isNotNull();
 
         return response;
+    }
+
+    public void assertPutOk(MockMvc mvc, String url, Object request) throws Exception {
+        ObjectMapper objectMapper = createObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        mvc.perform(put(url)
+                .content(requestJson)
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andReturn();
     }
 
     private ObjectMapper createObjectMapper() {
