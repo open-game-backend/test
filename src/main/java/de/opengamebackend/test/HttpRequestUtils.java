@@ -90,6 +90,13 @@ public class HttpRequestUtils {
                 .andReturn();
     }
 
+    public void assertDeleteOk(MockMvc mvc, String url) throws Exception {
+        mvc.perform(delete(url)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
     private ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
