@@ -5,6 +5,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Collections;
 
@@ -41,6 +44,10 @@ public class HttpRequestUtils {
         return assertPostOk(mvc, url, request, responseClass, null);
     }
 
+    public <T> T assertPostOk(MockMvc mvc, String url, Object request) throws Exception {
+        return assertPostOk(mvc, url, request, null, null);
+    }
+
     public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass, String playerId) throws Exception {
         ObjectMapper objectMapper = createObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
@@ -51,14 +58,18 @@ public class HttpRequestUtils {
             httpHeaders.put("Player-Id", Collections.singletonList(playerId));
         }
 
-        String responseJson = mvc.perform(post(url)
+        ResultActions resultActions = mvc.perform(post(url)
                 .content(requestJson)
                 .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse().getContentAsString();
+                .contentType(MediaType.APPLICATION_JSON));
 
+        if (responseClass == null) {
+            resultActions.andExpect(status().isNoContent()).andReturn();
+            return null;
+        }
+
+        MvcResult result = resultActions.andExpect(status().isOk()).andReturn();
+        String responseJson = result.getResponse().getContentAsString();
         T response = objectMapper.readValue(responseJson, responseClass);
         assertThat(response).isNotNull();
 
