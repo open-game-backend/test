@@ -40,12 +40,12 @@ public class HttpRequestUtils {
         return response;
     }
 
-    public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass) throws Exception {
-        return assertPostOk(mvc, url, request, responseClass, null);
+    public <T> T assertPostOk(MockMvc mvc, String url, Object request) throws Exception {
+        return assertPostOk(mvc, url, request, null);
     }
 
-    public <T> T assertPostOk(MockMvc mvc, String url, Object request) throws Exception {
-        return assertPostOk(mvc, url, request, null, null);
+    public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass) throws Exception {
+        return assertPostOk(mvc, url, request, responseClass, null);
     }
 
     public <T> T assertPostOk(MockMvc mvc, String url, Object request, Class<T> responseClass, String playerId) throws Exception {
