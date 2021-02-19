@@ -77,10 +77,18 @@ public class HttpRequestUtils {
     }
 
     public void assertPutOk(MockMvc mvc, String url, Object request) throws Exception {
+        assertPutOk(mvc, url, request, null);
+    }
+
+    public void assertPutOk(MockMvc mvc, String url, Object request, String playerId) throws Exception {
         ObjectMapper objectMapper = createObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
 
         HttpHeaders httpHeaders = new HttpHeaders();
+
+        if (playerId != null) {
+            httpHeaders.put("Player-Id", Collections.singletonList(playerId));
+        }
 
         mvc.perform(put(url)
                 .content(requestJson)
@@ -91,7 +99,18 @@ public class HttpRequestUtils {
     }
 
     public void assertDeleteOk(MockMvc mvc, String url) throws Exception {
+        assertDeleteOk(mvc, url, null);
+    }
+
+    public void assertDeleteOk(MockMvc mvc, String url, String playerId) throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        if (playerId != null) {
+            httpHeaders.put("Player-Id", Collections.singletonList(playerId));
+        }
+
         mvc.perform(delete(url)
+                .headers(httpHeaders)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andReturn();
